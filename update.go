@@ -6,18 +6,22 @@ import (
 	"time"
 )
 
-const retryDelay time.Duration = time.Second * 30
+const (
+	updateRetries int = 3
+
+	retryDelay time.Duration = time.Second * 30
+)
 
 // Updater fetches the current Cloudflare proxy ips once and starts a
 // goroutine that updates the trusted proxies list at specified intervals.
 func Updater(interval time.Duration, callback func([]string) error) {
-	if err := retryUpdate(callback, 3); err != nil {
+	if err := retryUpdate(callback, updateRetries); err != nil {
 		log.Println(err)
 	}
 
 	go func() {
 		for {
-			if err := retryUpdate(callback, 3); err != nil {
+			if err := retryUpdate(callback, updateRetries); err != nil {
 				log.Println(err)
 			}
 			time.Sleep(interval)
@@ -27,7 +31,7 @@ func Updater(interval time.Duration, callback func([]string) error) {
 
 func retryUpdate(callback func([]string) error, retries int) error {
 	if err := update(callback); err != nil {
-		if retries > 1 {
+		if retries > 0 {
 			time.Sleep(retryDelay)
 			return retryUpdate(callback, retries-1)
 		}

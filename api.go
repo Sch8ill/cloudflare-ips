@@ -46,13 +46,8 @@ func Fetch() ([]string, error) {
 		return nil, fmt.Errorf("api error: %d: %+v", resp.StatusCode, apiResp.Errors)
 	}
 
-	cidrs := append(
-		apiResp.Result.IPv4Cidrs,
-		append(
-			apiResp.Result.IPv6Cidrs,
-			apiResp.Result.JDCloudCidrs...,
-		)...,
-	)
+	cidrs := append(apiResp.Result.IPv4Cidrs, apiResp.Result.IPv6Cidrs...)
+	cidrs = append(cidrs, apiResp.Result.JDCloudCidrs...)
 
 	return cidrs, nil
 }

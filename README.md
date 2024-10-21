@@ -40,7 +40,7 @@ func main() {
 
         // OR
 
-        // Start a go routine that updates to trusted proxies list every 24 hours.
+        // Start a go routine that updates the trusted proxies list every 24 hours.
         cloudflareips.Updater(time.Hour*24, r.SetTrustedProxies)
 
         r.GET("/", func(c *gin.Context) {
